@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"   # Senha do root
+      MYSQL_DATABASE: matrizcurricular   # Banco de dados inicial
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Permitir senha vazia (opcional)
+    ports:
+      - "3306:3306"  # Expor a porta do MySQL
+    volumes:
+      - db_data:/var/lib/mysql  # Volume para persistir os dados
+    restart: always
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend  # Caminho para o diretório do back-end
+      dockerfile: Dockerfile  # Dockerfile do back-end
+    container_name: backend
+    ports:
+      - "8080:8080"  # Expor a porta 8080 para o back-end
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/matrizcurricular  # Conectar ao banco MySQL
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: "12345678"
+    depends_on:
+      - db  # O back-end depende do MySQL
+    networks:
+      - app-network
+    command: ["sh", "-c", "/wait-for-mysql.sh && java -jar /app/app.jar"]  # Espera pelo MySQL antes de iniciar o Spring Boot
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "5173:5173"  # Frontend exposto na porta 5173
+    networks:
+      - app-network
+    command: ["pnpm", "dev", "--host"]  # Adicionando o --host para expor o Vite externamente
+
+
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:  # Volume para persistir os dados do MySQL
