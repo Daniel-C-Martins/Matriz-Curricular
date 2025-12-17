@@ -77,8 +77,8 @@ Na organização do sistema, optamos por adotar a Clean Architecture como modelo
 <ol>
   <li>
     <p><strong>Clonar o repositório</strong></p>
-    <pre><code>git clone https://github.com/usuario/repositorio.git
-cd repositorio</code></pre>
+    <pre><code>git clone https://github.com/Daniel-C-Martins/Matriz-Curricular.git
+cd Matriz-Curricular</code></pre>
   </li>
   <li>
     <p><strong>Subir os containers com Docker Compose</strong></p>
